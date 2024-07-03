@@ -1,0 +1,57 @@
+.App {
+  text-align: center;
+}
+
+.square {
+  width: 100px;
+  height: 100px;
+  border: 6px solid #DB9956;
+  background-color: #fff;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin: 5px; /* Reset default margin */
+}
+
+.square:focus {
+  outline: none;
+}
+
+.square:disabled {
+  background-color: #eee;
+}
+
+.board-row {
+  display: flex; 
+  flex-wrap: wrap;
+  width: 360px;
+}
+
+.status{
+  font-size: 50px;
+  font-weight: 1000;
+  color: #f7cf95;
+  margin-left: 10px;
+}
+
+.handOver{
+  text-align: center;
+  width: 300px;
+  height: 70px;
+  background-color: #eee;
+  border: none;
+  margin-left: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
