@@ -1,57 +1,90 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
-.square {
-  width: 100px;
-  height: 100px;
-  border: 6px solid #DB9956;
-  background-color: #fff;
-  font-size: 24px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  margin: 5px; /* Reset default margin */
+
+.TicTacToeSquare {
+    width: 150px;
+    height: 150px;
+    background-color: #fff;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
-.square:focus {
-  outline: none;
+.GoBangSquare {
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    font-size: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
 }
 
-.square:disabled {
-  background-color: #eee;
+.GoBangSquareSpan,
+.XSquare,
+.OSquare {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
 }
 
-.board-row {
-  display: flex; 
-  flex-wrap: wrap;
-  width: 360px;
+.XSquare {
+    background-color: #000000;
 }
 
-.status{
-  font-size: 50px;
-  font-weight: 1000;
-  color: #f7cf95;
-  margin-left: 10px;
+.OSquare {
+    background-color: #fff;
+    font-size: 14px;
 }
 
-.handOver{
-  text-align: center;
-  width: 300px;
-  height: 70px;
-  background-color: #eee;
-  border: none;
-  margin-left: 20px;
-  cursor: pointer;
-  font-size: 16px;
-  letter-spacing: 2px;
+.status {
+    font-size: 30px;
+    font-weight: 500;
+    color: #000000;
+    margin-left: 10px;
 }
+
+.handOver {
+    text-align: center;
+    width: 300px;
+    height: 70px;
+    background-color: #eee;
+    border: none;
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.TicTacToe {
+    display: flex;
+    flex-wrap: wrap;
+    width: 450px;
+    height: 150px;
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    width: 450px;
+    height: 450px;
+}
+
 @keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
