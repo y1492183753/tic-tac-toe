@@ -11,6 +11,7 @@ const GameModel = [
         SquareClassSpan: 'TicTacToeSquareSpan', // 棋子样式
         XSquare: 'GoBangSquareSpan', // X样式
         OSquare: 'GoBangSquareSpan', // X样式
+        GameWinName: ['X胜', 'O胜'],
     },
     // 五子棋信息
     {
@@ -23,6 +24,7 @@ const GameModel = [
         SquareClassSpan: 'GoBangSquareSpan', // 棋子样式
         XSquare: 'XSquare', // X样式
         OSquare: 'OSquare', // X样式
+        GameWinName: ['黑棋胜', '白棋胜'],
     },
 ];
 

@@ -13,6 +13,7 @@ type SquareProps = {
  * @returns
  */
 const Square: React.FC<SquareProps> = React.memo(({ value, onSquareClick, mode }) => {
+    console.warn(0);
     let SquareStyle = GameModel[mode].SquareClassSpan;
     if (value === 'X') {
         SquareStyle = GameModel[mode].XSquare;

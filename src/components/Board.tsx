@@ -21,7 +21,6 @@ const Board: React.FC<GoBangBoardProps> = ({  onReset, mode }) => {
     const [lastMove, setLastMove] = useState<{ rowIndex: number, columnIndex: number } | null>(null);
     const [winner, setWinner] = useState<'X' | 'O' | null>(null);
     const [isBoardFull, setIsBoardFull] = useState(false);
-
     /**
      *下棋
      * @param rowIndex
@@ -150,9 +149,9 @@ const Board: React.FC<GoBangBoardProps> = ({  onReset, mode }) => {
     return (
         <div>
             <h1>{GameModel[mode].name}</h1>
-            {winner && size === GameModel[mode].boardSize && (
+            {winner  && (
                 <div>
-                    <p>{winner === 'X' ? '黑棋胜！' : '白棋胜！'}</p>
+                    <p>{winner === 'X' ? GameModel[mode].GameWinName[0] : GameModel[mode].GameWinName[1]}</p>
                 </div>
             )}
             {winner !== 'O' && winner !== 'X' && isBoardFull && <div>平局</div>}
