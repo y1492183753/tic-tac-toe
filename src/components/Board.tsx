@@ -1,35 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import Square from './Square';
 import checkWinner from '../utils/GameOver';
-
+import GameModel from '../consts/GameModelConfig';
 interface GoBangBoardProps {
-    size: number;
     currentBoard: (null | 'X' | 'O')[][];
-    onWin: (winner: 'X' | 'O') => void;
     onReset?: () => void;
-    mode: string;
-    isDisable: boolean;
+    mode: number;
 }
-
 /**
  *棋盘
  * @param param0
  * @returns
  */
-const Board: React.FC<GoBangBoardProps> = ({ size, onWin, onReset, mode, isDisable }) => {
+const Board: React.FC<GoBangBoardProps> = ({  onReset, mode }) => {
+    const size = GameModel[mode].boardSize;
     const [board, setBoard] = useState<(null | 'X' | 'O')[][]>(Array.from({ length: size }, () => Array(size).fill(null)));
     const [history, setHistory] = useState<(null | 'X' | 'O')[][][]>([board]);
     const [stepNumber, setStepNumber] = useState(0);
     const [xIsNext, setXIsNext] = useState(true);
     const [lastMove, setLastMove] = useState<{ rowIndex: number, columnIndex: number } | null>(null);
-    const [isBoardFull, setisBoardFull] = useState(false);
+    const [winner, setWinner] = useState<'X' | 'O' | null>(null);
+    const [isBoardFull, setIsBoardFull] = useState(false);
 
-    // 自动执行 checkWinner 函数
-    useEffect(() => {
-        if (lastMove) {
-            checkWinner(lastMove.rowIndex, lastMove.columnIndex, size, board, onWin);
-        }
-    }, [lastMove]);
     /**
      *下棋
      * @param rowIndex
@@ -37,66 +29,58 @@ const Board: React.FC<GoBangBoardProps> = ({ size, onWin, onReset, mode, isDisab
      * @returns
      */
     const handleClick = (rowIndex: number, columnIndex: number) => {
-        const currentBoard = history[stepNumber];
-        if (currentBoard[rowIndex][columnIndex] !== null) return;
-        // 创建一个新的历史记录，深拷贝当前棋盘，并更新落子位置
-        const updatedHistory = [...history, currentBoard.map((row, currentRowIndex) =>
-            (currentRowIndex === rowIndex ? row.map((cell, currentColumnIndex) => {
-                if (currentColumnIndex === columnIndex) {
-                    return xIsNext ? 'X' : 'O';
-                }
-                return cell;
-            }) : row))];
-
-        // 更新历史记录
-        setHistory(updatedHistory);
+        // 检查游戏是否已经结束
+        if (winner === 'X' || winner === 'O') return;
+        // 检查当前位置是否已被占用
+        if (history[stepNumber][rowIndex][columnIndex] !== null) return;
         // 平局判断
         if (stepNumber === (size * size) - 1) {
-            setisBoardFull(true);
+            setIsBoardFull(true);
         }
-        // 更新当前棋盘的落子位置
-        setBoard((prevBoard) => {
-            const newBoard = prevBoard.map((row, index) => {
-                if (index === rowIndex) {
-                    return row.map((cell, Index) => {
-                        if (Index === columnIndex) {
-                            return xIsNext ? 'X' : 'O';
-                        }
-                        return cell;
-                    });
-                }
-                return row;
-            });
-            return newBoard;
-        });
+        // 更新
+        updateBoard(rowIndex, columnIndex);
+    };
+
+    /**
+     *更新处理
+     * @param rowIndex
+     * @param columnIndex
+     */
+    const updateBoard = (rowIndex: number, columnIndex: number) => {
+        // 获取当前棋盘并进行深拷贝
+        const newBoard = JSON.parse(JSON.stringify(history[stepNumber]));
+        newBoard[rowIndex][columnIndex] = xIsNext ? 'X' : 'O'; // 更新落子位置
+        // 更新历史记录和当前棋盘状态\
+        setHistory([...history, newBoard]);
+        setBoard(newBoard);
         // 更新步数和当前玩家
-        setStepNumber(history.length);
+        setStepNumber(stepNumber + 1);
         setXIsNext(!xIsNext);
+        // 检查获胜者
+        checkWinner(rowIndex, columnIndex, mode, newBoard, handleWin);
+    };
+
+    /**
+     *输出胜者
+     * @param winner
+     */
+    const handleWin = (winner: 'X' | 'O') => {
+        setWinner(winner);
+    };
+
+    /**
+     *Square绑定的点击事件“入口”
+     */
+    const handle = (rowIndex: number, columnIndex: number) => {
         setLastMove({ rowIndex, columnIndex });
     };
 
-
-    /**
-     *渲染棋盘
-     * @returns
-     */
-    const renderBoard = () => {
-        return board.map((row, rowIndex) => (
-            <div key={rowIndex} className={mode}>
-                {row.map((cell, columnIndex) => (
-                    <Square
-                        key={`${rowIndex}-${columnIndex}`} // 使用行索引和列索引组合作为key
-                        value={cell}
-                        onSquareClick={() => handleClick(rowIndex, columnIndex)}
-                        mode={mode}
-                        isDisable={isDisable}
-                    />
-                ))}
-            </div>
-        ));
-    };
-
-
+    // 自执行handleClick
+    useEffect(() => {
+        if (lastMove) {
+            handleClick(lastMove.rowIndex, lastMove.columnIndex);
+        }
+    }, [lastMove]);
     /**
      * 重置棋盘
      */
@@ -109,38 +93,69 @@ const Board: React.FC<GoBangBoardProps> = ({ size, onWin, onReset, mode, isDisab
         setXIsNext(true);
         onReset?.();
     };
-
     /**
      *跳转
      * @param step
      */
     const jumpTo = (step: number) => {
         if (step > 0 && step < history.length) {
+            const newHistory = history.slice(0, step + 1);
             setBoard(history[step]);
             setStepNumber(step);
             setXIsNext(step % 2 === 0);
+            setHistory(newHistory);
+            setWinner(null);
+            setIsBoardFull(false);
         } else {
+            setIsBoardFull(false);
             resetBoard();
         }
     };
-
-    const moves = history.map((squares, move) => {
-        let description: string;
-        if (move > 0) {
-            description = `Go to move #${move}`;
-        } else {
-            description = '重新开始';
+    // 渲染跳转按钮，只有当 stepNumber 小于等于当前步骤时才渲染
+    const moves = history.map((__, move) => {
+        if (move > stepNumber) {
+            // 如果当前步骤大于 move，不渲染这个按钮
+            return null;
         }
+        const description = move > 0 ? `Go to move #${move}` : 'Start over';
         return (
             <li key={move}>
-                <button onClick={() => jumpTo(move)}>{description}</button>
+                <button onClick={() => jumpTo(move)} key={move}>
+                    {description}
+                </button>
             </li>
         );
-    });
+    }).filter(Boolean);
+
+    /**
+     *渲染棋盘
+     * @returns
+     */
+    const renderBoard = () => {
+        return board.map((row, rowIndex) => (
+            <div key={rowIndex} className={GameModel[mode].name}>
+                {row.map((cell, columnIndex) => (
+                    <Square
+                        key={`${rowIndex}-${columnIndex}`} // 使用行索引和列索引组合作为key
+                        value={cell}
+                        onSquareClick={React.useCallback(() => handle(rowIndex, columnIndex), [])}
+                        mode={mode}
+                    />
+                ))}
+            </div>
+        ));
+    };
+
 
     return (
         <div>
-            {isBoardFull && <div>平局</div>}
+            <h1>{GameModel[mode].name}</h1>
+            {winner && size === GameModel[mode].boardSize && (
+                <div>
+                    <p>{winner === 'X' ? '黑棋胜！' : '白棋胜！'}</p>
+                </div>
+            )}
+            {winner !== 'O' && winner !== 'X' && isBoardFull && <div>平局</div>}
             <div className="board">{renderBoard()}</div>
             <div className="game-info">
                 <ol>{moves}</ol>
@@ -148,8 +163,4 @@ const Board: React.FC<GoBangBoardProps> = ({ size, onWin, onReset, mode, isDisab
         </div>
     );
 };
-
-
 export default Board;
-
-

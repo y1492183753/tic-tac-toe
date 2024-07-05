@@ -25,8 +25,28 @@
     cursor: pointer;
 }
 
-.GoBangSquareSpan,
-.XSquare,
+.GoBangSquareSpan {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.XSquare {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    background-color: #000000;
+}
+
 .OSquare {
     width: 10px;
     height: 10px;
@@ -35,23 +55,10 @@
     justify-content: center;
     align-items: center;
     font-size: 10px;
-}
-
-.XSquare {
-    background-color: #000000;
-}
-
-.OSquare {
     background-color: #fff;
     font-size: 14px;
 }
 
-.status {
-    font-size: 30px;
-    font-weight: 500;
-    color: #000000;
-    margin-left: 10px;
-}
 
 .handOver {
     text-align: center;
