@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Square from './Square';
 import GameModel from '../consts/GameModelConfig';
 import { useSelector, useDispatch } from 'react-redux';
@@ -71,7 +71,7 @@ const Board: React.FC<GoBangBoardProps> = ({ mode }) => {
                         <Square
                             key={`${rowIndex}-${columnIndex}`}
                             value={cell}
-                            onSquareClick={() => handle(rowIndex, columnIndex)}
+                            onSquareClick={useCallback(() => handle(rowIndex, columnIndex), [])}
                             mode={mode}
                         />
                     ))}
