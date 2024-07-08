@@ -19,13 +19,19 @@ interface GoBangBoardProps {
 }
 
 class Board extends React.Component<GoBangBoardProps> {
+    // 在构造函数中绑定方法
+    constructor (props: GoBangBoardProps) {
+        super(props);
+        this.handle = this.handle.bind(this);
+        this.jumpToHistory = this.jumpToHistory.bind(this);
+        this.modeChange = this.modeChange.bind(this);
+    }
     /**
      * 下棋事件
      */
     handle = (rowIndex: number, columnIndex: number) => {
         this.props.makeMove(rowIndex, columnIndex);
     };
-
     /**
      * 跳转历史记录
      * @param step
@@ -66,7 +72,6 @@ class Board extends React.Component<GoBangBoardProps> {
     );
     render () {
         const { mode, winner, isBoardFull } = this.props;
-
         // 渲染跳转按钮，只有当 stepNumber 小于等于当前步骤时才渲染
         const moves = this.props.history.map((__, move) => {
             if (move > this.props.stepNumber) {
