@@ -9,7 +9,7 @@ import GameModel from '../consts/GameModelConfig';
  */
 const checkWinner = (rowIndex: number, columnIndex: number, mode:number, board: ('X' | 'O' | null)[][], onWin: (winner: 'X' | 'O') => void) => {
     const currentPlayer = board[rowIndex][columnIndex];
-    if (currentPlayer === null) return; // 如果该位置是空的，则不进行检查
+    if (currentPlayer === null) return null; // 如果该位置是空的，则不进行检查
 
     // 检查四个方向的五子连线
     if (checkLine(rowIndex, columnIndex, 0, 1, board, mode) || // 水平方向
@@ -17,9 +17,9 @@ const checkWinner = (rowIndex: number, columnIndex: number, mode:number, board: 
     checkLine(rowIndex, columnIndex, 1, 1, board, mode) || // 左斜方向
     checkLine(rowIndex, columnIndex, 1, -1, board, mode)) { // 右斜方向
         onWin?.(currentPlayer);
-        return true;
+        return currentPlayer;
     }
-    return false;
+    return null;
 };
 /**
  *检查连线
@@ -35,9 +35,9 @@ const checkLine = (startX: number, startY: number, stepX: number, stepY: number,
     let count = 0;
     let currentX = startX;
     let currentY = startY;
-    const size = GameModel[mode].boardSize;
+    const thisSize = GameModel[mode].size;
     // 检查向前方向
-    while (currentX >= 0 && currentX < size && currentY >= 0 && currentY < size && board[currentX][currentY] === board[startX][startY]) {
+    while (currentX >= 0 && currentX < thisSize && currentY >= 0 && currentY < thisSize && board[currentX][currentY] === board[startX][startY]) {
         count++;
         currentX += stepX;
         currentY += stepY;
@@ -45,7 +45,7 @@ const checkLine = (startX: number, startY: number, stepX: number, stepY: number,
     // 检查向后方向
     currentX = startX - stepX;
     currentY = startY - stepY;
-    while (currentX >= 0 && currentX < size && currentY >= 0 && currentY < size && board[currentX][currentY] === board[startX][startY]) {
+    while (currentX >= 0 && currentX < thisSize && currentY >= 0 && currentY < thisSize && board[currentX][currentY] === board[startX][startY]) {
         count++;
         currentX -= stepX;
         currentY -= stepY;

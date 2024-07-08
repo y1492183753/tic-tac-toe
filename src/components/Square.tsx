@@ -1,31 +1,38 @@
 import React from 'react';
 import GameModel from '../consts/GameModelConfig';
 
-
 type SquareProps = {
     value: 'X' | 'O' | null;
     onSquareClick: () => void;
-    mode : number;
+    mode: number;
 };
-/**
- *棋子
- * @param param0
- * @returns
- */
-const Square: React.FC<SquareProps> = React.memo(({ value, onSquareClick, mode }) => {
-    console.warn(0);
-    let SquareStyle = GameModel[mode].SquareClassSpan;
-    if (value === 'X') {
-        SquareStyle = GameModel[mode].XSquare;
+
+class Square extends React.Component<SquareProps> {
+    /**
+     * 棋子样式
+     * @returns
+     */
+    getSquareStyle () {
+        switch (this.props.value) {
+            case 'X':
+                return GameModel[this.props.mode].XSquare;
+            case 'O':
+                return GameModel[this.props.mode].OSquare;
+            default:
+                return GameModel[this.props.mode].SquareClassSpan;
+        }
     }
-    if (value === 'O') {
-        SquareStyle = GameModel[mode].OSquare;
+
+    render () {
+        const { value, onSquareClick, mode } = this.props;
+        const SquareStyle = this.getSquareStyle();
+
+        return (
+            <button onClick={onSquareClick} className={GameModel[mode].SquareClass}>
+                <span className={SquareStyle}>{value}</span>
+            </button>
+        );
     }
-    return (
-        <button onClick={onSquareClick} className={GameModel[mode].SquareClass} >
-            <span className={SquareStyle}>{value}</span>
-        </button>
-    );
-});
+}
 
 export default Square;
