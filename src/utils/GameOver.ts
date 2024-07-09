@@ -7,7 +7,7 @@ import GameModel from '../consts/GameModelConfig';
  * @param board
  * @returns
  */
-const checkWinner = (rowIndex: number, columnIndex: number, mode:number, board: ('X' | 'O' | null)[][], onWin: (winner: 'X' | 'O') => void) => {
+const checkWinner = (rowIndex: number, columnIndex: number, mode:number, board: ('X' | 'O' | null)[][], onWin?: (winner: 'X' | 'O') => void) => {
     const currentPlayer = board[rowIndex][columnIndex];
     if (currentPlayer === null) return null; // 如果该位置是空的，则不进行检查
 

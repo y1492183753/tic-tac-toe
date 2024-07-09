@@ -13,6 +13,7 @@ const GameModel = [
         XSquare: 'GoBangSquareSpan', // X样式
         OSquare: 'GoBangSquareSpan', // O样式
         GameWinName: ['X胜', 'O胜'],
+        SquareName: ['X', 'O'],
     },
     // 五子棋信息
     {
@@ -26,6 +27,7 @@ const GameModel = [
         XSquare: 'XSquare', // X样式
         OSquare: 'OSquare', // X样式
         GameWinName: ['黑棋胜', '白棋胜'],
+        SquareName: ['黑棋', '白棋'],
     },
 ];
 

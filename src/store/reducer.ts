@@ -27,6 +27,7 @@ export interface GoBangState {
     lastMove:{ rowIndex: number, columnIndex: number } | null;
     winner: 'X' | 'O' | null;
     isBoardFull: boolean;
+    AI: 'X' | 'O' | null;
 }
 
 
@@ -40,12 +41,14 @@ const initialState: GoBangState = {
     lastMove: null,
     winner: null,
     isBoardFull: false,
+    AI: null,
 };
 
 const goBangReducer = (state = initialState, action: any) => {
     if (action.type === 'RESET_BOARD') {
         const { mode } = action;
         const newSize = GameModel[mode].size;
+        const newAI = null;
         return {
             ...state,
             board: initBoard(newSize),
@@ -54,11 +57,10 @@ const goBangReducer = (state = initialState, action: any) => {
             xIsNext: true,
             winner: null,
             isBoardFull: false,
+            AI: newAI,
         };
     } else if (action.type === 'MAKE_MOVE') {
         const { rowIndex, columnIndex } = action;
-        if (state.winner !== null || state.isBoardFull) return state;
-        if (state.history[state.stepNumber][rowIndex][columnIndex] !== null) return state;
         const newBoard = JSON.parse(JSON.stringify(state.history[state.stepNumber]));
         newBoard[rowIndex][columnIndex] = state.xIsNext ? 'X' : 'O';
         const newStepNumber = state.stepNumber + 1;
@@ -98,6 +100,13 @@ const goBangReducer = (state = initialState, action: any) => {
             lastMove: null,
             winner: null,
             isBoardFull: false,
+            AI: null,
+        };
+    } else if (action.type === 'CHOOSE_AI') {
+        const { square } = action;
+        return {
+            ...state,
+            AI: square,
         };
     }
     return state;

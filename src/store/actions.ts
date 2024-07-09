@@ -3,6 +3,7 @@ export const RESET_BOARD = 'RESET_BOARD';
 export const MAKE_MOVE = 'MAKE_MOVE';
 export const JUMP_TO = 'JUMP_TO';
 export const CHANGE_MODE = 'CHANGE_MODE';
+export const CHOOSE_AI = 'CHOOSE_AI';
 
 /**
  *下棋Action
@@ -38,3 +39,12 @@ export const resetBoard = (mode: number) => ({
  * @returns
  */
 export const changeMode = () => ({ type: CHANGE_MODE });
+/**
+ *选择棋子
+ * @param square
+ * @returns
+ */
+export const chooseAI = (square: string) => ({
+    type: CHOOSE_AI,
+    square,
+});

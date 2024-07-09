@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from './reducer'; // Adjust path as necessary
-const store = configureStore({ reducer: rootReducer });
+import goBangReducer from './reducer';
+const store = configureStore({ reducer: goBangReducer });
 export type { GoBangState } from './reducer';
 export default store;
