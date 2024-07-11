@@ -3,7 +3,7 @@
 }
 
 
-.TicTacToeSquare {
+.TicTacToe-Square {
     width: 150px;
     height: 150px;
     background-color: #fff;
@@ -14,7 +14,7 @@
     cursor: pointer;
 }
 
-.GoBangSquare {
+.GoBang-Square {
     width: 30px;
     height: 30px;
     background-color: #fff;
@@ -25,7 +25,7 @@
     cursor: pointer;
 }
 
-.GoBangSquareSpan {
+.TicTacToe-O, .TicTacToe-X {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -36,7 +36,7 @@
     font-weight: 500;
 }
 
-.XSquare {
+.GoBang-X {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -47,7 +47,7 @@
     background-color: #000000;
 }
 
-.OSquare {
+.GoBang-O {
     width: 10px;
     height: 10px;
     border-radius: 50%;
@@ -72,13 +72,6 @@
     letter-spacing: 2px;
 }
 
-.TicTacToe {
-    display: flex;
-    flex-wrap: wrap;
-    width: 450px;
-    height: 150px;
-}
-
 .board {
     display: flex;
     flex-wrap: wrap;
@@ -87,10 +80,6 @@
     margin-top: 20px;
 }
 
-.GoBang{
-    display: flex;
-    flex-wrap: wrap;
-}
 @keyframes App-logo-spin {
     from {
         transform: rotate(0deg);

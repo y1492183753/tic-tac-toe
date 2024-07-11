@@ -1,24 +1,37 @@
 import React from 'react';
 import Square from './Square';
-import GameModel from '../consts/GameModelConfig';
+import GAME_MODEL from '../consts/gameModelConfig';
 import { connect } from 'react-redux';
 import { makeMove, resetBoard, jumpTo, changeMode, chooseAI } from '../store/actions';
 import type { GoBangState } from '../store/index';
 import clickForAI from '../utils/getBestMoveAI';
 
 interface GoBangBoardProps {
+    /** 游戏模式 */
     mode: number;
+    /** 棋盘 */
     board: any[][];
+    /** 历史记录 */
     history: any[][][];
+    /** 步骤次数 */
     stepNumber: number;
+    /** 胜者 */
     winner: 'X' | 'O' | null;
+    /** 棋盘是否已满 */
     isBoardFull: boolean;
+    /** 下一步是否是X */
     xIsNext: boolean;
+    /** AI的棋子 */
     AI: 'X' | 'O' | null;
+    /** 下棋 */
     makeMove: typeof makeMove;
+    /** 重置棋盘 */
     resetBoard: typeof resetBoard;
+    /** 跳转到之前的记录 */
     jumpTo: typeof jumpTo;
+    /** 改变游戏 */
     changeMode: typeof changeMode;
+    /** 选择棋子 */
     chooseAI: typeof chooseAI;
 }
 class Board extends React.Component<GoBangBoardProps> {
@@ -26,12 +39,13 @@ class Board extends React.Component<GoBangBoardProps> {
      * AI下棋，更新dom时执行
      */
     componentDidUpdate () {
-        if (this.props.AI !== (this.props.xIsNext ? GameModel[this.props.mode].SquareName[0] : GameModel[this.props.mode].SquareName[1])) return;// 轮到AI下棋了
-        const bestMove = clickForAI(this.props.board, this.props.AI, GameModel[0].SquareName);
+        if (this.props.stepNumber !== 0) return;
+        if (this.props.AI !== (this.props.xIsNext ? GAME_MODEL[this.props.mode].player[0] : GAME_MODEL[this.props.mode].player[1])) return;// 轮到AI下棋了
+        const bestMove = clickForAI(this.props.board, this.props.AI, GAME_MODEL[0].player);
         if (bestMove) {
             const [row, col] = bestMove;
             this.props.makeMove(row, col);
-        }// 可以下棋了
+        }// AI可以下棋了
     }
     /**
      * 下棋事件
@@ -40,11 +54,17 @@ class Board extends React.Component<GoBangBoardProps> {
      * @returns
      */
     handle = (rowIndex: number, columnIndex: number) => {
-        if (this.props.winner !== null || this.props.isBoardFull) return;// 结局已出则不能下棋
-        if (this.props.history[this.props.stepNumber][rowIndex][columnIndex] !== null) return;// 下的位置不能有棋子
-        if (this.props.mode === 0 && this.props.AI === null) return;// 先选择AI对战才能下棋 && 井字棋
-        if (this.props.mode === 0 && this.props.AI === (this.props.xIsNext ? GameModel[this.props.mode].SquareName[0] : GameModel[this.props.mode].SquareName[1])) return;// 轮到AI时不能下棋 && 井字棋
-        this.props.makeMove(rowIndex, columnIndex);// 可以下棋了
+        if (this.props.mode === 0 && this.props.AI === (this.props.xIsNext ? GAME_MODEL[this.props.mode].player[0] : GAME_MODEL[this.props.mode].player[1])) return;// 轮到AI时不能下棋 && 井字棋
+        this.props.makeMove(rowIndex, columnIndex);// 玩家可以下棋了
+        const newBoard = JSON.parse(JSON.stringify(this.props.board));
+        newBoard[rowIndex][columnIndex] =  this.props.xIsNext ? 'X' : 'O';
+        if (this.props.AI !== null) {
+            const bestMove = clickForAI(newBoard, this.props.AI, GAME_MODEL[0].player);
+            if (bestMove) {
+                const [row, col] = bestMove;
+                this.props.makeMove(row, col);// AI可以下棋了
+            }
+        }
     };
     /**
      * 跳转历史记录
@@ -68,23 +88,24 @@ class Board extends React.Component<GoBangBoardProps> {
      * @returns
      */
     renderBoard = () => (
-        <div>
+        <>
             {this.props.board.map((row, rowIndex) => (
-                <div key={rowIndex} className={GameModel[this.props.mode].name}>
-                    {row.map((cell, columnIndex) => (
-                        <Square
-                            key={`${rowIndex}-${columnIndex}`}
-                            value={cell}
-                            onSquareClick={() => this.handle(rowIndex, columnIndex)}
-                            mode={this.props.mode}
-                        />
-                    ))}
-                </div>
+                row.map((cell, columnIndex) => (
+                    <Square
+                        key={`${rowIndex}-${columnIndex}`}
+                        value={cell}
+                        onSquareClick={() => this.handle(rowIndex, columnIndex)}
+                        mode={this.props.mode}
+                    />
+                ))
             ))}
-        </div>
+
+        </>
     );
     render () {
         const { mode, winner, isBoardFull } = this.props;
+        const Winner = winner === 'X' ? GAME_MODEL[mode].player[0] : GAME_MODEL[mode].player[1];
+        const nextPlayer = this.props.xIsNext ? GAME_MODEL[mode].player[0] : GAME_MODEL[mode].player[1];
         // 渲染跳转按钮，只有当 stepNumber 小于等于当前步骤时才渲染
         const moves = this.props.history.map((__, move) => {
             if (move > this.props.stepNumber) {
@@ -99,21 +120,20 @@ class Board extends React.Component<GoBangBoardProps> {
                 </li>
             );
         }).filter(Boolean);
-
         return (
             <div>
                 <button onClick={this.modeChange} className='handOver'>切换</button>
-                <h1>{GameModel[mode].name}</h1>
+                <h1>{GAME_MODEL[mode].name}</h1>
                 {this.props.stepNumber === 0 && this.props.AI === null && this.props.mode === 0 && <div>你想选择：
                     <button onClick={() => this.props.chooseAI('O')}>X</button> or <button onClick={() => this.props.chooseAI('X')}>O</button>
                 </div>}
                 {winner && (
                     <div>
-                        <p>{winner === 'X' ? GameModel[mode].GameWinName[0] : GameModel[mode].GameWinName[1]}</p>
+                        <p>{`${Winner}胜`}</p>
                     </div>
                 )}
-                {winner === null && !isBoardFull && <div>下一步轮到<span>{this.props.xIsNext ? GameModel[mode].SquareName[0] : GameModel[mode].SquareName[1]}</span></div>}
-                {winner !== 'O' && winner !== 'X' && isBoardFull && <div>平局</div>}
+                {!winner && !isBoardFull && <div>下一步轮到<span>{nextPlayer}</span></div>}
+                {!winner && isBoardFull && <div>平局</div>}
                 <div className="board">{this.renderBoard()}</div>
                 <div className="game-info">
                     <ol>{moves}</ol>
@@ -136,7 +156,6 @@ const mapStateToProps = (state: GoBangState) => ({
     xIsNext: state.xIsNext,
     AI: state.AI,
 });
-
 const mapDispatchToProps = {
     makeMove,
     resetBoard,

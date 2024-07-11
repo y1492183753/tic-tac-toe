@@ -10,13 +10,11 @@ const COMP = +1;
  * @returns
  */
 export default function clickForAI (board: Board, aiPlayer: 'X' | 'O', chess: string[]): number[] | false {
-    const digitalBoard = setDigitalForBoard(board, aiPlayer, aiPlayer, chess);
+    const digitalBoard = setDigitalForBoard(board, aiPlayer, chess);
     const emptySquares = getEmptySquare(digitalBoard);
-
     if (emptySquares.length === 0) {
         return false;
     }
-
     const bestMove = getBestMove(digitalBoard, COMP);
     return bestMove;
 }
@@ -33,7 +31,7 @@ function getBestMove (digitalBoard: number[][], player: number): number[] {
     getEmptySquare(digitalBoard).forEach((coordinate) => {
         const [xAxis, yAxis] = coordinate;
         digitalBoard[xAxis][yAxis] = player;
-        const score = minimax(digitalBoard, player === COMP ? -Infinity : Infinity, player === COMP ? Infinity : -Infinity, player === COMP ? HUMAN : COMP);
+        const score = minimax(digitalBoard, player === COMP ? HUMAN : COMP);
         digitalBoard[xAxis][yAxis] = 0;
 
         if (player === COMP && score > bestScore) {
@@ -55,7 +53,7 @@ function getBestMove (digitalBoard: number[][], player: number): number[] {
  * @param player
  * @returns
  */
-function minimax (digitalBoard: number[][], alpha: number, beta: number, player: number): number {
+function minimax (digitalBoard: number[][],  player: number): number {
     if (checkWin(digitalBoard, COMP)) return 10;
     if (checkWin(digitalBoard, HUMAN)) return -10;
     if (isBoardFull(digitalBoard)) return 0;
@@ -65,10 +63,8 @@ function minimax (digitalBoard: number[][], alpha: number, beta: number, player:
         getEmptySquare(digitalBoard).forEach((coordinate) => {
             const [xAxis, yAxis] = coordinate;
             digitalBoard[xAxis][yAxis] = COMP;
-            bestScore = Math.max(bestScore, minimax(digitalBoard, alpha, beta, HUMAN));
+            bestScore = Math.max(bestScore, minimax(digitalBoard, HUMAN));
             digitalBoard[xAxis][yAxis] = 0;
-            alpha = Math.max(alpha, bestScore);
-            if (beta <= alpha) return;
         });
         return bestScore;
     }
@@ -76,10 +72,8 @@ function minimax (digitalBoard: number[][], alpha: number, beta: number, player:
     getEmptySquare(digitalBoard).forEach((coordinate) => {
         const [xAxis, yAxis] = coordinate;
         digitalBoard[xAxis][yAxis] = HUMAN;
-        bestScore = Math.min(bestScore, minimax(digitalBoard, alpha, beta, COMP));
+        bestScore = Math.min(bestScore, minimax(digitalBoard, COMP));
         digitalBoard[xAxis][yAxis] = 0;
-        beta = Math.min(beta, bestScore);
-        if (beta <= alpha) return;
     });
     return bestScore;
 }
@@ -127,7 +121,7 @@ function isBoardFull (digitalBoard: number[][]): boolean {
  * @param chess
  * @returns
  */
-function setDigitalForBoard (board: Board, aiPlayer: 'X' | 'O', activeUser: string, chess: string[]): number[][] {
+function setDigitalForBoard (board: Board,  activeUser: string, chess: string[]): number[][] {
     const digitalBoard: number[][] = [];
     for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
         const row: number[] = [];

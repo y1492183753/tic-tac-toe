@@ -1,5 +1,5 @@
-import GameModel from '../consts/GameModelConfig';
-import checkWinner from '../utils/GameOver';
+import GAME_MODEL from '../consts/gameModelConfig';
+import checkWinner from '../utils/gameOver';
 /**
  * 棋盘初始化
  * @param boardSize 棋盘尺寸
@@ -9,13 +9,7 @@ function initBoard (boardSize: number) {
     const rowArr = Array(boardSize).fill(null);
     return rowArr.map(() => rowArr);
 }
-/**
- *输出胜者
- * @param winner
- */
-const handleWin = (winner: 'X' | 'O') => {
-    return winner;
-};
+
 
 export interface GoBangState {
     mode: number;
@@ -33,9 +27,9 @@ export interface GoBangState {
 
 const initialState: GoBangState = {
     mode: 0,
-    board: initBoard(GameModel[0].size),
-    boardSize: GameModel[0].size,
-    history: [initBoard(GameModel[0].size)],
+    board: initBoard(GAME_MODEL[0].size),
+    boardSize: GAME_MODEL[0].size,
+    history: [initBoard(GAME_MODEL[0].size)],
     stepNumber: 0,
     xIsNext: true,
     lastMove: null,
@@ -47,7 +41,7 @@ const initialState: GoBangState = {
 const goBangReducer = (state = initialState, action: any) => {
     if (action.type === 'RESET_BOARD') {
         const { mode } = action;
-        const newSize = GameModel[mode].size;
+        const newSize = GAME_MODEL[mode].size;
         const newAI = null;
         return {
             ...state,
@@ -60,12 +54,15 @@ const goBangReducer = (state = initialState, action: any) => {
             AI: newAI,
         };
     } else if (action.type === 'MAKE_MOVE') {
+        if (state.winner !== null || state.isBoardFull) return state;// 结局已出则不能下棋
+        if (state.mode === 0 && state.AI === null) return state;// 先选择AI对战才能下棋 && 井字棋
         const { rowIndex, columnIndex } = action;
+        if (state.history[state.stepNumber][rowIndex][columnIndex] !== null) return state;// 下的位置不能有棋子
         const newBoard = JSON.parse(JSON.stringify(state.history[state.stepNumber]));
         newBoard[rowIndex][columnIndex] = state.xIsNext ? 'X' : 'O';
         const newStepNumber = state.stepNumber + 1;
         const newIsBoardFull = state.stepNumber === ((state.boardSize * state.boardSize) - 1);
-        const newWinner = checkWinner(rowIndex, columnIndex, state.mode, newBoard, handleWin);
+        const newWinner = checkWinner(rowIndex, columnIndex, state.mode, newBoard);
         return {
             ...state,
             board: newBoard,
@@ -92,9 +89,9 @@ const goBangReducer = (state = initialState, action: any) => {
         const gameMode = state.mode === 1 ? 0 : 1;
         return {
             mode: gameMode,
-            board: initBoard(GameModel[gameMode].size),
-            boardSize: GameModel[gameMode].size,
-            history: [initBoard(GameModel[gameMode].size)],
+            board: initBoard(GAME_MODEL[gameMode].size),
+            boardSize: GAME_MODEL[gameMode].size,
+            history: [initBoard(GAME_MODEL[gameMode].size)],
             stepNumber: 0,
             xIsNext: true,
             lastMove: null,
